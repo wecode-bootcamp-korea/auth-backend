@@ -51,7 +51,6 @@ app.get('/me', (req, res) => {
   try {
     const verified = jwt.verify(token, 'secretkey');
     const user = readUserById(verified.user_id);
-    delete user.password;
     console.info(200, `token verified`);
     res.json(user);
   } catch(err) {
