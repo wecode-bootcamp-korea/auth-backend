@@ -24,8 +24,8 @@ function readUserByEmail(email) {
 function readUserById(id) {
   const user = users.find(user => user.id === id);
   if (!user) throw new HttpError('user not found', 404);
-  delete user.password;
-  return user;
+  const { password, ...userWithoutPassword } = user;
+  return userWithoutPassword;
 }
 
 module.exports = { createUser, readUserByEmail, readUserById }
