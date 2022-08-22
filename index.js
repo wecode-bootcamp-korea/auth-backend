@@ -40,6 +40,7 @@ app.post('/login', (req, res) => {
     'secretkey',
     { expiresIn: '31d' }
   );
+  console.info(200, `${email} login success`);
   res.json({ access_token: token });
 });
 
@@ -47,15 +48,20 @@ app.get('/me', (req, res) => {
   const token = req.headers.authorization;
   if (!token)
     throw new HttpError('token not provided', 400);
-  const verified = jwt.verify(token, 'secretkey');
-  const user = readUserById(verified.user_id);
-  delete user.password;
-  res.json(user);
+  try {
+    const verified = jwt.verify(token, 'secretkey');
+    const user = readUserById(verified.user_id);
+    delete user.password;
+    console.info(200, `token verified`);
+    res.json(user);
+  } catch(err) {
+    throw new HttpError('token not verified', 403);
+  }
 });
 
 app.use((err, req, res, next) => {
   console.error(err.statusCode, err.message);
-  res.status(err.statusCode).json({ message: err.message });
+  res.status(err.statusCode || 500).json({ message: err.message });
 });
 
 app.listen(10010);
